@@ -1,0 +1,25 @@
+title Shipping Ships API
+
+participant Client
+participant Python
+participant JSONServer
+participant nss_handler
+participant Views
+participant Database
+
+
+Client->>Python:GET request to "/ships"
+Python->>JSONServer:Run do_GET() method
+JSONServer->>nss_handler: Run parse_url() to parse the url
+note over nss_handler:Breaks down URL into components,\n then transforms it into a dictionary
+JSONServer<<--nss_handler: Return parsed url
+JSONServer->>Views: Request a list of ships with list_ships()
+Views->>Database:Fetch ship data with fetchall()
+Views<<--Database:Return ship data
+note over Views:Iterates query results, \nconverting rows to dictionaries
+note over Views: Convert Python to JSON
+JSONServer<<--Views:Return list of ships (in JSON format)
+JSONServer->>nss_handler:Set HTTP response code with response()
+note over nss_handler:Sets response code with \nset_response_code()
+JSONServer<<--nss_handler:
+JSONServer-->>Client: Here's all yer ships (in JSON format)
